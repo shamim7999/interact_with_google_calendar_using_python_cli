@@ -10,9 +10,9 @@ app = typer.Typer()
 
 
 @app.command()
-def list_events():
+def list_events(results: Optional[int] = 10):
     calendar = Calendar()
-    calendar.list_events()
+    calendar.list_events(results)
 
 
 @app.command()
@@ -29,7 +29,12 @@ def create_event(summary: str, description: str, start: datetime.datetime, end: 
     }
     calendar = Calendar()
     calendar.create_event(new_event)
-    pass
+
+
+@app.command()
+def delete_event(event_id: str):
+    calendar = Calendar()
+    calendar.delete_event(event_id)
 
 
 @app.command()

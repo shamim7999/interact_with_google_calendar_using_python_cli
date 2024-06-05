@@ -72,6 +72,13 @@ This will display the help message with available commands.
 ```commandline
 python3 cli.py list-events
 ```
+By default it shows 10 upcoming events
+
+```commandline
+python3 cli.py list-events --result 20
+```
+
+Shows upcoming 20 events
 
 ## Creating an Event
 ### To create a new event in your Google Calendar, use the create-event command with the required parameters:
