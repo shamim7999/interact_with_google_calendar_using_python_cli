@@ -8,6 +8,7 @@ __pycache__/
 
 #Credentials
 credentials.json
+token.json
 
 # Distribution / packaging
 .Python
