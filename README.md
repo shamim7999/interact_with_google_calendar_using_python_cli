@@ -25,7 +25,7 @@ py -m venv <venv_name>
 python3 -m venv <venv_name>
 ```
 
-Replace `<venv_name>` with your desired name (e.g., `espresso_env`).
+Replace `<venv_name>` with your desired name (e.g., `google_calendar`).
 
 **b. Activate the virtual environment:**
 
@@ -66,6 +66,14 @@ python3 cli.py
 This will display the help message with available commands.
 
 # Usage
+
+## See all the functionalities
+```commandline
+python3 cli.py --help
+```
+
+It shows all available functionalities in our python script.
+
 ## Listing Events
 ### To list events from your Google Calendar, run:
 
@@ -80,12 +88,91 @@ python3 cli.py list-events --result 20
 
 Shows upcoming 20 events
 
+```commandline
+python3 cli.py list-events --help
+```
+
+See details.
+
 ## Creating an Event
 ### To create a new event in your Google Calendar, use the create-event command with the required parameters:
 
 ```commandline
 python3 cli.py create-event --summary "Event Summary" --description "Event Description" --start "2024-06-05T08:00:00" --end "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com"
 ```
+
+This is how we have to create an event.
+
+```commandline
+python3 cli.py create-event --help
+```
+
+See details.
+
+## Delete an Event
+
+### To delete an event, provide the event ID in <event_id> here, event_id is a string.
+
+```commandline
+python3 cli.py delete-event <event_id>
+```
+
+This will delete an event.
+
+```commandline
+python3 cli.py delete-event --help
+```
+
+See details.
+## Update an Event
+
+### To update an event, you can run the following command
+
+```commandline
+python3 cli.py update-event <event_id> --start "2024-06-09T05:00:40" --end "2024-06-09T08:00:40" --summary "Updated Summary"
+```
+
+Here, you can add other optional fields, if optional fields are not given, then the old fields will remain to the event.
+
+```commandline
+python3 cli.py update-event --help
+```
+
+See details.
+
+## Get an Event By it's event_id
+
+```commandline
+python3 cli.py get-event-by-id <event_id>
+```
+
+Fetches the event with <event_id>
+
+```commandline
+python3 cli.py get-event-by-id --help
+```
+
+See details.
+
+## Get Events by It's Summary Substring
+
+```commandline
+python3 cli.py get-events-by-summary <summary>
+```
+
+Here it will fetch upcoming 5 events (by default) that matches the summary substring.
+
+```commandline
+python3 cli.py get-events-by-summary <summary> --result 100
+```
+Here it will fetch upcoming 100 events that matches the summary substring.
+
+```commandline
+python3 cli.py get-events-by-summary --help
+```
+
+See details.
+
 ## Listing ACLs
 ### To list Access Control Lists (ACLs) for your Google Calendar, run:
 
@@ -111,6 +198,6 @@ Here rule_id is the email address you provided.
 # Notes
 
 * **Google Calendar:**
-  * Ensure that you have set up authentication credentials for accessing the Google Calendar API. Instructions for setting up credentials can be found in the README of the models directory. Keep track of your coffee supplies.
+  * Ensure that you have set up authentication credentials for accessing the Google Calendar API.
   * All date and time parameters are expected to be in ISO 8601 format.
   * The application interacts with Google Calendar using the provided Calendar model.
