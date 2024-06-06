@@ -88,6 +88,11 @@ def get_events_by_summary(summary: str, result: Optional[int] = 5):
 
 
 @app.command()
+def watch_event(event_id: str):
+    calendar.watch_event(event_id)
+
+
+@app.command()
 def list_acls():
     calendar.list_acls()
 

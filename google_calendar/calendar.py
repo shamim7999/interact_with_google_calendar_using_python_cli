@@ -62,6 +62,19 @@ class GoogleCalendar:
             logger.error(f"An error occurred: {error}")
             return NOT_FOUND
 
+    def watch_event(self, e_id):
+        """Watch an Event provided by an event_id (or e_id can be seen in the function argument)"""
+        # try:
+        #     event = self.service.events().watch(calendarId='primary', eventId=e_id).execute()
+        #     logger.info(f"The Event is: {event}")
+        #     #display_event_details([event])
+        #     return event
+        #
+        # except HttpError as error:
+        #     logger.error(f"An error occurred: {error}")
+        #     return NOT_FOUND
+        pass
+
     def get_event_by_id(self, e_id):
         """Get an Event provided by an event_id (or e_id can be seen in the function argument)"""
         try:
@@ -100,7 +113,7 @@ class GoogleCalendar:
             new_processed_event = self.service.events().update(calendarId='primary', eventId=updated_event['id'],
                                                                body=updated_event).execute()
             logger.info(f"After Update the Event is: {new_processed_event}")
-            display_event_details([event])
+            display_event_details([new_processed_event])
         except HttpError as error:
             logger.error(f"An error occurred: {error}")
             return NOT_FOUND
