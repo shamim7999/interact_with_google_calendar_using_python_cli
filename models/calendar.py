@@ -2,18 +2,23 @@ import datetime
 import os.path
 import logging
 
+from rich.console import Console
+from rich.table import Table
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-
+from helper.table_creator import table_with_all_fields
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
+NOT_FOUND = -1
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+console = Console()
+
 
 class Calendar:
     def __init__(self):
@@ -47,12 +52,60 @@ class Calendar:
             logger.error(f"An error occurred: {error}")
 
     def delete_event(self, e_id):
-        """Deletes an Event provided by an event_Id """
+        """Deletes an Event provided by an event_Id (or e_id can be seen in the function argument)"""
         try:
             self.service.events().delete(calendarId='primary', eventId=e_id).execute()
             logger.info(f"Event with ID {e_id} deleted.")
         except HttpError as error:
             logger.error(f"An error occurred: {error}")
+            return NOT_FOUND
+
+    def get_event_by_id(self, e_id):
+        """Get an Event provided by an event_id (or e_id can be seen in the function argument)"""
+        try:
+            event = self.service.events().get(calendarId='primary', eventId=e_id).execute()
+            logger.info(f"The Event is: {event}")
+            return event
+
+        except HttpError as error:
+            logger.error(f"An error occurred: {error}")
+            return NOT_FOUND
+
+    def update_event(self, updated_event):
+        f"""Update an Event provided by an {updated_event} can be seen in the function argument"""
+        try:
+            event = self.get_event_by_id(updated_event['id'])
+            logger.info(f"Before Update the Event is: {event}")
+            new_processed_event = self.service.events().update(calendarId='primary', eventId=updated_event['id'],
+                                                               body=updated_event).execute()
+            logger.info(f"After Update the Event is: {new_processed_event}")
+
+            start = event["start"].get("dateTime", event["start"].get("date"))
+            end = event["end"].get("dateTime", event["end"].get("date"))
+            summary = event.get("summary", "No Title Available")
+            attendees = event.get("attendees", [])
+
+            attendees_emails = []
+            for attendee in attendees:
+                attendees_emails.append(attendee.get("email", "No Email Available"))
+
+            attendees_emails_str = ", ".join(attendees_emails)
+            description = event.get("description", "No Description Available.")
+            event_id = event['id']
+
+            table = table_with_all_fields
+            table.add_row(
+                event_id,
+                summary,
+                description,
+                start,
+                end,
+                attendees_emails_str
+            )
+            console.print(table)
+        except HttpError as error:
+            logger.error(f"An error occurred: {error}")
+            return NOT_FOUND
 
     def list_events(self, result):
         f"""Lists the upcoming events on the user's calendar.
@@ -76,6 +129,8 @@ class Calendar:
             )
             events = events_result.get("items", [])
 
+            table = table_with_all_fields
+
             if not events:
                 logger.info("No upcoming events found.")
                 return
@@ -85,11 +140,28 @@ class Calendar:
                 end = event["end"].get("dateTime", event["end"].get("date"))
                 summary = event.get("summary", "No Title Available")
                 attendees = event.get("attendees", [])
+
                 attendees_emails = []
                 for attendee in attendees:
                     attendees_emails.append(attendee.get("email", "No Email Available"))
-                logger.info(f"Starting Time: {start}, Ending Time: {end}, Summary: {summary}, Attendees Email: {attendees_emails}")
 
+                attendees_emails_str = ", ".join(attendees_emails)
+                description = event.get("description", "No Description Available.")
+                event_id = event['id']
+
+                table.add_row(
+                    event_id,
+                    summary,
+                    description,
+                    start,
+                    end,
+                    attendees_emails_str
+                )
+
+                logger.info(f"Starting Time: {start}, Ending Time: {end}, Summary: {summary}, "
+                            f"Attendees Email: {attendees_emails}")
+
+            console.print(table)
             logger.info(f"Found upcoming {len(events)} events")
         except HttpError as error:
             logger.error(f"An error occurred: {error}")
@@ -129,5 +201,3 @@ class Calendar:
 
         except HttpError as error:
             logger.error(f"An error occurred while deleting the ACL rule: {error}")
-
-
