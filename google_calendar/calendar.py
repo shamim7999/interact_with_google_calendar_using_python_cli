@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 console = Console()
 
 
-class Calendar:
+class GoogleCalendar:
     def __init__(self):
         self.creds = None
         self.service = None

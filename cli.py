@@ -4,10 +4,10 @@ import typer
 
 from typing_extensions import Annotated
 from typing import List, Optional
-from models.calendar import Calendar
+from google_calendar.calendar import GoogleCalendar
 
 app = typer.Typer()
-calendar = Calendar()
+calendar = GoogleCalendar()
 
 
 @app.command()
