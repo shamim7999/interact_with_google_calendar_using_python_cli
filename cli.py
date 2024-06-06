@@ -37,12 +37,12 @@ def delete_event(event_id: str):
 
 @app.command()
 def update_event(
-    event_id: str,
-    summary: Optional[str] = None,
-    description: Optional[str] = None,
-    start: Optional[datetime.datetime] = None,
-    end: Optional[datetime.datetime] = None,
-    attendees: Annotated[Optional[List[str]], typer.Option()] = None
+        event_id: str,
+        summary: Optional[str] = None,
+        description: Optional[str] = None,
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        attendees: Annotated[Optional[List[str]], typer.Option()] = None
 ):
     if attendees:
         attendees = [{'email': email} for email in attendees]
@@ -74,6 +74,17 @@ def update_event(
     }
 
     calendar.update_event(updated_event)
+
+
+@app.command()
+def get_event_by_id(e_id: str):
+    calendar.get_event_by_id(e_id)
+
+
+@app.command()
+def get_events_by_summary(summary: str, result: Optional[int] = 5):
+    calendar.get_events_by_summary(summary, result)
+    pass
 
 
 @app.command()
