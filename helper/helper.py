@@ -1,4 +1,5 @@
 import logging
+import json
 
 from rich.console import Console
 from rich.table import Table
@@ -11,7 +12,7 @@ console = Console()
 
 def display_event_details(events):
     """Formats and displays event details in a table."""
-    table = Table("ID", "Summary", "Description", "Start Time", "End Time", "Attendees Emails")
+    table = Table("ID", "Summary", "Description", "Start Time", "End Time", "Attendees Emails", "Event Type")
     for event in events:
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
@@ -22,6 +23,7 @@ def display_event_details(events):
         attendees_emails_str = ", ".join(attendees_emails)
         description = event.get("description", "No Description Available.")
         event_id = event['id']
+        event_type = event.get('eventType', 'N/A')
 
         table.add_row(
             event_id,
@@ -29,8 +31,10 @@ def display_event_details(events):
             description,
             start,
             end,
-            attendees_emails_str
+            attendees_emails_str,
+            event_type
         )
         logger.info(f"Starting Time: {start}, Ending Time: {end}, Summary: {summary}, "
                     f"Attendees Email: {attendees_emails}")
+        logger.info(f"{json.dumps(event, indent=2)}\n")
     console.print(table)

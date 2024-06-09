@@ -171,6 +171,16 @@ Here it will fetch upcoming 100 events that matches the summary substring.
 python3 cli.py get-events-by-summary --help
 ```
 
+## Import a default event
+
+To import a existing or default event, run the command below.
+
+```commandline
+python3 cli.py <event_id> --start <start_time> --end <end_time>
+```
+
+If <end_time> is not provided then the <end_time> will have a default value of 1 hour following the <start_time>.
+
 See details.
 
 ## Listing ACLs

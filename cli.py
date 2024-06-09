@@ -88,6 +88,11 @@ def get_events_by_summary(summary: str, result: Optional[int] = 5):
 
 
 @app.command()
+def import_event(event_id: str, start: Optional[datetime.datetime], end: Optional[datetime.datetime] = None):
+    calendar.import_event(event_id, start, end)
+
+
+@app.command()
 def watch_event(event_id: str):
     calendar.watch_event(event_id)
 
