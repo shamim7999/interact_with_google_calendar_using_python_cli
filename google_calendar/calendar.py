@@ -149,6 +149,54 @@ class GoogleCalendar:
         except HttpError as error:
             logger.error(f"An error occurred: {error}")
 
+    def import_event(self, e_id, start, end):
+        """
+        Import an event into the user's primary Google Calendar, optionally modifying its start and end times.
+
+        Args:
+            e_id (str): The ID of the event to import.
+            start (datetime.datetime): The new start time of the event. If end time is not provided, end time will be
+                                       set to 1 hour after the start time.
+            end (datetime.datetime, optional): The new end time of the event. Defaults to None.
+
+        Returns:
+            None
+
+        Raises:
+            HttpError: If an error occurs while importing the event.
+
+        Notes:
+            This method retrieves the existing event by its ID, modifies its start and end times if necessary, and imports
+            the modified event into the user's primary calendar. If the event ID or start time is not valid, an error will
+            be logged. The event is imported using the 'import_' method of the Google Calendar API, ensuring that the event
+            is treated as a new event rather than updating an existing one.
+        """
+        if end is None:
+            end = start + datetime.timedelta(hours=1)
+        old_event = self.get_event_by_id(e_id)
+        start = start.isoformat()
+        end = end.isoformat()
+
+        old_event['start'] = {
+            'dateTime': start,
+            'timeZone': 'UTC'
+        }
+        old_event['end'] = {
+            'dateTime': end,
+            'timeZone': 'UTC'
+        }
+
+        if 'id' in old_event:
+            del old_event['id']
+        if 'etag' in old_event:
+            del old_event['etag']
+
+        try:
+            imported_event = self.service.events().import_(calendarId='primary', body=old_event).execute()
+            logger.info(f"htmlLink: {imported_event.get('htmlLink', '')}")
+        except HttpError as error:
+            logger.error(f"An error occurred while fetching the event: {error}")
+
     def list_acls(self):
         """Lists the ACLs for the primary calendar."""
         try:
