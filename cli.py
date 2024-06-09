@@ -1,6 +1,7 @@
 import datetime
-
+import logging
 import typer
+import json
 
 from typing_extensions import Annotated
 from typing import List, Optional
@@ -8,6 +9,8 @@ from google_calendar.calendar import GoogleCalendar
 
 app = typer.Typer()
 calendar = GoogleCalendar()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @app.command()
@@ -17,7 +20,8 @@ def list_events(results: Optional[int] = 10):
 
 @app.command()
 def create_event(summary: str, description: str, start: datetime.datetime, end: datetime.datetime,
-                 attendees: Annotated[Optional[List[str]], typer.Option()] = None):
+                 attendees: Annotated[Optional[List[str]], typer.Option()] = None,
+                 recur: Optional[str] = None):
     if attendees:
         attendees = [{'email': email} for email in attendees]
     new_event = {
@@ -25,8 +29,16 @@ def create_event(summary: str, description: str, start: datetime.datetime, end: 
         'description': description,
         'start': {'dateTime': start.isoformat(), 'timeZone': 'UTC'},
         'end': {'dateTime': end.isoformat(), 'timeZone': 'UTC'},
-        'attendees': attendees
+        'attendees': attendees,
+        'recurrence': []
     }
+
+    if recur is not None:
+        if recur.lower() == 'monthly':
+            new_event['recurrence'] = ['RRULE:FREQ=MONTHLY;COUNT=12;BYMONTHDAY=1']
+        if recur.lower() == 'daily':
+            new_event['recurrence'] = ['RRULE:FREQ=DAILY;COUNT=2']
+
     calendar.create_event(new_event)
 
 
@@ -42,12 +54,15 @@ def update_event(
         description: Optional[str] = None,
         start: Optional[datetime.datetime] = None,
         end: Optional[datetime.datetime] = None,
-        attendees: Annotated[Optional[List[str]], typer.Option()] = None
+        attendees: Annotated[Optional[List[str]], typer.Option()] = None,
+        ra: Optional[bool] = typer.Option(False, "--ra", help="Remove attendees")
 ):
+    old_event = calendar.get_event_by_id(event_id)
+
     if attendees:
         attendees = [{'email': email} for email in attendees]
-
-    old_event = calendar.get_event_by_id(event_id)
+    else:
+        attendees = old_event.get('attendees', "Attendees Not Available.")
 
     if summary is None:
         summary = old_event.get('summary', "Summary Not Available.")
@@ -61,16 +76,20 @@ def update_event(
         end = old_event['end'].get('dateTime', "End Not Available.")
     else:
         end = end.isoformat()
-    if attendees is None:
-        attendees = old_event.get('attendees', "Attendees Not Available.")
 
+    eligible_attendees = attendees + calendar.get_attendees(event_id)
+
+    if ra:
+        eligible_attendees = calendar.remove_attendees(attendees, eligible_attendees)
+
+    logger.info(f"-----------------------\nAttendees----------------------: {eligible_attendees}\n---------------\n")
     updated_event = {
         'id': event_id,
         'summary': summary,
         'description': description,
         'start': {'dateTime': start, 'timeZone': 'UTC'},
         'end': {'dateTime': end, 'timeZone': 'UTC'},
-        'attendees': attendees
+        'attendees': eligible_attendees
     }
 
     calendar.update_event(updated_event)
@@ -91,6 +110,24 @@ def get_events_by_summary(summary: str, result: Optional[int] = 5):
 def import_event(event_id: str, start: Optional[datetime.datetime], end: Optional[datetime.datetime] = None):
     calendar.import_event(event_id, start, end)
 
+
+@app.command()
+def get_event_instances(event_id: str):
+    calendar.get_event_instances(event_id)
+
+
+@app.command()
+def update_event_instances(
+        event_id: str,
+        summary: Optional[str] = None,
+        description: Optional[str] = None,
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        attendees: Annotated[Optional[List[str]], typer.Option()] = None,
+        ra: Optional[bool] = typer.Option(False, "--ra", help="Remove attendees")
+):
+
+    pass
 
 @app.command()
 def watch_event(event_id: str):

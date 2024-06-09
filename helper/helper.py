@@ -4,7 +4,6 @@ import json
 from rich.console import Console
 from rich.table import Table
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 console = Console()

@@ -134,6 +134,15 @@ python3 cli.py update-event <event_id> --start "2024-06-09T05:00:40" --end "2024
 
 Here, you can add other optional fields, if optional fields are not given, then the old fields will remain to the event.
 
+### To remove any number of attendees from the event, run the command below.
+
+```commandline
+python3 cli.py create-event <event_id> --ra --attendees "email1@example.com" --attendees "email2@example.com"
+```
+
+This'll remove 'email1@example.com' 'email2@example.com' attendees from the event.
+
+
 ```commandline
 python3 cli.py update-event --help
 ```
@@ -173,13 +182,17 @@ python3 cli.py get-events-by-summary --help
 
 ## Import a default event
 
-To import a existing or default event, run the command below.
+To import an existing or default event, run the command below.
 
 ```commandline
 python3 cli.py <event_id> --start <start_time> --end <end_time>
 ```
 
 If <end_time> is not provided then the <end_time> will have a default value of 1 hour following the <start_time>.
+
+```commandline
+python3 cli.py --help
+```
 
 See details.
 
