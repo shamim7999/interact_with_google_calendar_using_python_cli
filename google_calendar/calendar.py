@@ -1,17 +1,17 @@
 import os.path
 import logging
+
+from urllib.error import URLError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-
 from features.event import Event
 from features.acl import ACL
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 NOT_FOUND = "NOT_FOUND"
-
 logger = logging.getLogger(__name__)
 
 
@@ -41,4 +41,8 @@ class GoogleCalendar:
 
             self.service = build("calendar", "v3", credentials=self.creds)
         except HttpError as error:
-            logger.error(f"Error found while authenticating.")
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")

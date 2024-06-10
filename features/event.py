@@ -1,5 +1,6 @@
 import datetime
 import logging
+
 from googleapiclient.errors import HttpError
 from helper.helper import display_event_details
 
@@ -36,13 +37,20 @@ class Event:
             #     {'email': 'attendee2@example.com', 'responseStatus': 'needsAction'}
             # ]
         """
-        event = self.get_event_by_id(e_id)
-        if event:
-            attendees = event.get('attendees', [])
-            return attendees
-        else:
-            print("Event not found")
-            return []
+        try:
+            event = self.get_event_by_id(e_id)
+            if event:
+                attendees = event.get('attendees', [])
+                return attendees
+            else:
+                print("Event not found")
+                return []
+        except HttpError as error:
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
 
     def remove_attendees(self, remove_able_attendees, total_attendees):
         """
@@ -128,7 +136,11 @@ class Event:
             logger.info(f"Event created: {event.get('htmlLink')}")
             display_event_details([event])
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
 
     def delete_event(self, e_id):
         """
@@ -154,7 +166,13 @@ class Event:
             self.service.events().delete(calendarId='primary', eventId=e_id).execute()
             logger.info(f"Event with ID {e_id} deleted.")
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+            return NOT_FOUND
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+            return NOT_FOUND
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
             return NOT_FOUND
 
     def watch_event(self, e_id):
@@ -190,7 +208,13 @@ class Event:
             display_event_details([event])
             return event
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+            return NOT_FOUND
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+            return NOT_FOUND
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
             return NOT_FOUND
 
     def get_events_by_summary(self, summary, result):
@@ -225,7 +249,13 @@ class Event:
             display_event_details(events_matched_with_summary_substring)
             return events_matched_with_summary_substring
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+            return []
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+            return []
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
             return []
 
     def delete_event_by_summary(self, summary):
@@ -249,7 +279,13 @@ class Event:
                 self.service.events().delete(calendarId='primary', eventId=event['id']).execute()
                 logger.info(f"Event with ID {event['id']} deleted.")
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+            return NOT_FOUND
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+            return NOT_FOUND
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
             return NOT_FOUND
 
     def update_event(self, updated_event):
@@ -262,7 +298,13 @@ class Event:
             logger.info(f"After Update the Event is: {new_processed_event}")
             display_event_details([new_processed_event])
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+            return NOT_FOUND
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+            return NOT_FOUND
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
             return NOT_FOUND
 
     def list_events(self, result):
@@ -294,7 +336,11 @@ class Event:
             logger.info(f"Found upcoming {len(events)} events")
             return events
         except HttpError as error:
-            logger.error(f"An error occurred: {error}")
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
 
     def import_event(self, e_id, start, end):
         """
@@ -342,7 +388,11 @@ class Event:
             imported_event = self.service.events().import_(calendarId='primary', body=old_event).execute()
             logger.info(f"htmlLink: {imported_event.get('htmlLink', '')}")
         except HttpError as error:
-            logger.error(f"An error occurred while fetching the event: {error}")
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
 
     def get_event_instances(self, e_id):
         """
@@ -364,14 +414,21 @@ class Event:
             # This will retrieve all instances of the recurring event with the specified ID
             # from the primary calendar and display the details of each instance.
         """
-        page_token = None
-        while True:
-            events = self.service.events().instances(calendarId='primary', eventId=e_id,
-                                                     pageToken=page_token).execute()
-            display_event_details(events['items'])
-            page_token = events.get('nextPageToken')
-            if not page_token:
-                break
+        try:
+            page_token = None
+            while True:
+                events = self.service.events().instances(calendarId='primary', eventId=e_id,
+                                                         pageToken=page_token).execute()
+                display_event_details(events['items'])
+                page_token = events.get('nextPageToken')
+                if not page_token:
+                    break
+        except HttpError as error:
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
 
     def update_event_instances(self, updated_recurring_event):
         """
@@ -391,22 +448,28 @@ class Event:
         Returns:
             None
         """
-        page_token = None
-        while True:
-            events = self.service.events().instances(calendarId='primary', eventId=updated_recurring_event['id'],
-                                                     pageToken=page_token).execute()
-            for instance in events['items']:
-                instance['summary'] = updated_recurring_event.get('summary', instance.get('summary'))
-                instance['description'] = updated_recurring_event.get('description', instance.get('description'))
-                instance['attendees'] = updated_recurring_event.get('attendees', instance.get('attendees'))
+        try:
+            page_token = None
+            while True:
+                events = self.service.events().instances(calendarId='primary', eventId=updated_recurring_event['id'],
+                                                         pageToken=page_token).execute()
+                for instance in events['items']:
+                    instance['summary'] = updated_recurring_event.get('summary', instance.get('summary'))
+                    instance['description'] = updated_recurring_event.get('description', instance.get('description'))
+                    instance['attendees'] = updated_recurring_event.get('attendees', instance.get('attendees'))
 
-                self.service.events().update(
-                    calendarId='primary',
-                    eventId=instance['id'],
-                    body=instance
-                ).execute()
-            display_event_details(events['items'])
-            page_token = events.get('nextPageToken')
-            if not page_token:
-                break
-
+                    self.service.events().update(
+                        calendarId='primary',
+                        eventId=instance['id'],
+                        body=instance
+                    ).execute()
+                display_event_details(events['items'])
+                page_token = events.get('nextPageToken')
+                if not page_token:
+                    break
+        except HttpError as error:
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")

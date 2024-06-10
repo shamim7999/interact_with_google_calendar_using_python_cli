@@ -100,8 +100,12 @@ See details.
 ```commandline
 python3 cli.py create-event --summary "Event Summary" --description "Event Description" --start "2024-06-05T08:00:00" --end "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com"
 ```
-
 This is how we have to create an event.
+
+```commandline
+python3 cli.py create-event --summary "Event Summary" --description "Event Description" --start "2024-06-05T08:00:00" --end "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com" --recur monthly
+```
+It creates monthly meeting for 12 months from the starting time by default.
 
 ```commandline
 python3 cli.py create-event --help
@@ -137,7 +141,7 @@ Here, you can add other optional fields, if optional fields are not given, then 
 ### To remove any number of attendees from the event, run the command below.
 
 ```commandline
-python3 cli.py create-event <event_id> --ra --attendees "email1@example.com" --attendees "email2@example.com"
+python3 cli.py update-event <event_id> --ra --attendees "email1@example.com" --attendees "email2@example.com"
 ```
 
 This'll remove 'email1@example.com' 'email2@example.com' attendees from the event.
@@ -192,6 +196,22 @@ If <end_time> is not provided then the <end_time> will have a default value of 1
 
 ```commandline
 python3 cli.py --help
+```
+
+See details.
+
+##  Update Event Instances or Update the Recurring Event
+```commandline
+python3 cli.py <event_id> --summary "Update Summary" --description "Update Description" --attendees "new1@example.com" --attendees "new2@example.com"
+```
+
+```commandline
+python3 cli.py <event_id> --summary "Update Summary" --description "Update Description" --attendees "new1@example.com" --attendees "new2@example.com" --ra
+```
+`--ra` invokes to remove the attendees from that particular recurring event.
+
+```commandline
+python3 cli.py update-event-instances --help
 ```
 
 See details.

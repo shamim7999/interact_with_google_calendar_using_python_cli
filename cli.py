@@ -3,11 +3,9 @@ import logging
 import typer
 import helper.helper as helper
 
-
 from typing_extensions import Annotated
 from typing import List, Optional
 from google_calendar.calendar import GoogleCalendar
-
 
 app = typer.Typer()
 calendar = GoogleCalendar()
