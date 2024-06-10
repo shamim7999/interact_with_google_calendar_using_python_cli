@@ -142,6 +142,41 @@ class Event:
         except Exception as error:
             logger.error(f"An unexpected error occurred: {error}")
 
+    def quick_add_event(self, summary):
+        """
+        Quickly adds an event to the primary Google Calendar.
+
+        This method uses the quickAdd feature of the Google Calendar API,
+        which allows you to add events using natural language input.
+
+        Args:
+            summary (str): A string containing the summary or description
+                           of the event to be added. This can be in natural
+                           language, such as "Doctor Appointment 10 to 11 am."
+                           It will auto-detect the time as 10-11 am to and
+                           summary as "Doctor Appointment" to my calendar.
+
+        Returns:
+            None
+
+        Raises:
+            HttpError: If the request to the Google Calendar API fails.
+
+        Logs:
+            The details of the created event using the logger.
+        """
+        try:
+            created_event = self.service.events().quickAdd(
+                calendarId='primary',
+                text=summary).execute()
+            logger.info(f"QUICK ADDED EVENT: {created_event}")
+        except HttpError as error:
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
+
     def delete_event(self, e_id):
         """
         Deletes an event from the primary calendar.

@@ -113,6 +113,14 @@ python3 cli.py create-event --help
 
 See details.
 
+## Quick Add an Event
+
+```commandline
+python3 cli.py quick-add-event "Doctor Appointment 10 to 11 am."
+```
+Quickly adds an event to the primary Google Calendar using natural language input (e.g., "Doctor Appointment 10 to 11 am" will create an event from 10-11 am with the summary "Doctor Appointment").
+
+
 ## Delete an Event
 
 ### To delete an event, provide the event ID in <event_id> here, event_id is a string.

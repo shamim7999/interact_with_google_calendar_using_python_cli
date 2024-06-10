@@ -43,6 +43,11 @@ def create_event(summary: str, description: str, start: datetime.datetime, end: 
 
 
 @app.command()
+def quick_add_event(summary: str):
+    calendar.event.quick_add_event(summary)
+
+
+@app.command()
 def delete_event(event_id: str):
     calendar.event.delete_event(event_id)
 
