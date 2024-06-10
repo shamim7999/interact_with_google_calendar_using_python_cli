@@ -37,3 +37,39 @@ def display_event_details(events):
                     f"Attendees Email: {attendees_emails}")
         logger.info(f"{json.dumps(event, indent=2)}\n")
     console.print(table)
+
+
+def get_summary_field(old_event, summary):
+    if summary is None:
+        summary = old_event.get('summary', "Summary Not Available.")
+    return summary
+
+
+def get_attendees_field(old_event, attendees):
+    if attendees:
+        attendees = [{'email': email} for email in attendees]
+    else:
+        attendees = old_event.get('attendees', "Attendees Not Available.")
+    return attendees
+
+
+def get_description_field(old_event, description):
+    if description is None:
+        description = old_event.get('description', "description Not Available.")
+    return description
+
+
+def get_start_field(old_event, start):
+    if start is None:
+        start = old_event['start'].get('dateTime', "Start Not Available.")
+    else:
+        start = start.isoformat()
+    return start
+
+
+def get_end_field(old_event, end):
+    if end is None:
+        end = old_event['end'].get('dateTime', "Start Not Available.")
+    else:
+        end = end.isoformat()
+    return end
