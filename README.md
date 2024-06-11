@@ -98,12 +98,12 @@ See details.
 ### To create a new event in your Google Calendar, use the create-event command with the required parameters:
 
 ```commandline
-python3 cli.py create-event --summary "Event Summary" --description "Event Description" --start "2024-06-05T08:00:00" --end "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com"
+python3 cli.py create-event "Event Summary" "Event Description" "2024-06-05T08:00:00" "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com"
 ```
 This is how we have to create an event.
 
 ```commandline
-python3 cli.py create-event --summary "Event Summary" --description "Event Description" --start "2024-06-05T08:00:00" --end "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com" --recur monthly
+python3 cli.py create-event "Event Summary" "Event Description" "2024-06-05T08:00:00" "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com" --recur monthly
 ```
 It creates monthly meeting for 12 months from the starting time by default.
 
@@ -116,9 +116,9 @@ See details.
 ## Quick Add an Event
 
 ```commandline
-python3 cli.py quick-add-event "Doctor Appointment 10 to 11 am."
+python3 cli.py quick-add-event "Doctor Appointment on 20th June 2024, 10 to 11 am."
 ```
-Quickly adds an event to the primary Google Calendar using natural language input (e.g., "Doctor Appointment 10 to 11 am" will create an event from 10-11 am with the summary "Doctor Appointment").
+Quickly adds an event to the primary Google Calendar using natural language input (e.g., "Doctor Appointment 10 to 11 am" will create an event from 10am to 11am on the given date with the summary "Doctor Appointment").
 
 
 ## Delete an Event
@@ -130,6 +130,14 @@ python3 cli.py delete-event <event_id>
 ```
 
 This will delete an event.
+
+### To delete an event, provided by summary, do the following.
+
+```commandline
+python3 cli.py delete_event_by_summary "Monthly Meeting"
+```
+
+It'll fetch all the events matches with the substring of the given summary, and delete them all.
 
 ```commandline
 python3 cli.py delete-event --help
