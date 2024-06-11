@@ -93,12 +93,12 @@ class Event:
                 eligible_attendees.append(attendee)
         return eligible_attendees
 
-    def create_event(self, new_event):
+    def create_event(self, new_event, cal_id):
         """
-        Creates a new event in the primary calendar.
+        Creates a new event in the specified calendar.
 
         This function takes a dictionary representing a new event and creates
-        the event in the primary Google Calendar. If the event is successfully
+        the event in the specified Google Calendar. If the event is successfully
         created, it logs the event's HTML link and displays the event details.
         If an error occurs during the event creation, it logs the error message.
 
@@ -107,6 +107,7 @@ class Event:
             to be created. This should include required fields such as 'summary',
             'start', 'end', and optionally other fields like 'description',
             'location', and 'attendees'.
+            cal_id (str): The ID of the calendar where the event will be created.
 
         Returns:
             None
@@ -128,11 +129,11 @@ class Event:
                     {'email': 'bob@example.com'},
                 ],
             }
-            self.create_event(new_event)
+            self.create_event(new_event, 'primary')
             # This will create a new event in the primary calendar with the provided details.
         """
         try:
-            event = self.service.events().insert(calendarId='primary', body=new_event).execute()
+            event = self.service.events().insert(calendarId=cal_id, body=new_event).execute()
             logger.info(f"Event created: {event.get('htmlLink')}")
             display_event_details([event])
         except HttpError as error:
@@ -142,9 +143,9 @@ class Event:
         except Exception as error:
             logger.error(f"An unexpected error occurred: {error}")
 
-    def quick_add_event(self, summary):
+    def quick_add_event(self, summary, cal_id):
         """
-        Quickly adds an event to the primary Google Calendar.
+        Quickly adds an event to the specified Google Calendar.
 
         This method uses the quickAdd feature of the Google Calendar API,
         which allows you to add events using natural language input.
@@ -153,21 +154,24 @@ class Event:
             summary (str): A string containing the summary or description
                            of the event to be added. This can be in natural
                            language, such as "Doctor Appointment 10 to 11 am."
-                           It will auto-detect the time as 10-11 am to and
-                           summary as "Doctor Appointment" to my calendar.
+                           It will auto-detect the time as 10-11 am and
+                           summary as "Doctor Appointment".
+            cal_id (str): The ID of the calendar where the event will be added.
 
         Returns:
             None
 
         Raises:
             HttpError: If the request to the Google Calendar API fails.
+            OSError: If there is an OS-level error.
+            Exception: For any other unexpected errors.
 
         Logs:
             The details of the created event using the logger.
         """
         try:
             created_event = self.service.events().quickAdd(
-                calendarId='primary',
+                calendarId=cal_id,
                 text=summary).execute()
             logger.info(f"QUICK ADDED EVENT: {created_event}")
         except HttpError as error:
@@ -342,7 +346,7 @@ class Event:
             logger.error(f"An unexpected error occurred: {error}")
             return NOT_FOUND
 
-    def list_events(self, result):
+    def list_events(self, result, cal_id):
         f"""Lists the upcoming events on the user's calendar.
 
         Finds {result} number of events from Calendar. If {result} variable is
@@ -354,7 +358,7 @@ class Event:
             events_result = (
                 self.service.events()
                 .list(
-                    calendarId="primary",
+                    calendarId=cal_id,
                     timeMin=now,
                     maxResults=result,
                     singleEvents=True,

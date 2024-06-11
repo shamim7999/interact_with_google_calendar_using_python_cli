@@ -66,7 +66,8 @@ python3 cli.py
 This will display the help message with available commands.
 
 # Usage
-
+[*** If `--cal-id` is not invoked, then by default it will be `primary` id for calendar.
+Where there are events related commands, you have this option. *** ]
 ## See all the functionalities
 ```commandline
 python3 cli.py --help
@@ -80,13 +81,19 @@ It shows all available functionalities in our python script.
 ```commandline
 python3 cli.py list-events
 ```
-By default it shows 10 upcoming events
+By default it shows 10 upcoming events from `primary` calendar.
 
 ```commandline
 python3 cli.py list-events --result 20
 ```
 
-Shows upcoming 20 events
+Shows upcoming 20 events from `primary` calendar.
+
+```commandline
+python3 cli.py list-events --result 20 --cal-id "tl6r65307fijol51rec73lqmjs"
+```
+
+Shows upcoming 20 events from `Holiday` calendar. Here `Holiday` I said just for example.
 
 ```commandline
 python3 cli.py list-events --help
@@ -94,13 +101,22 @@ python3 cli.py list-events --help
 
 See details.
 
+## List of Calendars
+### You can see the list of calendars by executing following command.
+
+```commandline
+python3 cli.py list-calendars
+```
+
+It'll show you all the calendars. The calendar ID which is your email address, this is your `primary` calendar. This `primary` is also represents the `ID`. 
+
 ## Creating an Event
 ### To create a new event in your Google Calendar, use the create-event command with the required parameters:
 
 ```commandline
 python3 cli.py create-event "Event Summary" "Event Description" "2024-06-05T08:00:00" "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com"
 ```
-This is how we have to create an event.
+This is how we have to create an event. 
 
 ```commandline
 python3 cli.py create-event "Event Summary" "Event Description" "2024-06-05T08:00:00" "2024-06-05T10:00:00" --attendees "email1@example.com" --attendees "email2@example.com" --recur monthly

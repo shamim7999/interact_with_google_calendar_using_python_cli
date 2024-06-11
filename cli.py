@@ -14,14 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 @app.command()
-def list_events(results: Optional[int] = 10):
-    calendar.event.list_events(results)
+def list_events(result: Optional[int] = 10, cal_id: Optional[str] = "primary"):
+    calendar.event.list_events(result, cal_id)
 
 
 @app.command()
 def create_event(summary: str, description: str, start: datetime.datetime, end: datetime.datetime,
                  attendees: Annotated[Optional[List[str]], typer.Option()] = None,
-                 recur: Optional[str] = None):
+                 recur: Optional[str] = None,
+                 cal_id: Optional[str] = "primary"):
     if attendees:
         attendees = [{'email': email} for email in attendees]
     new_event = {
@@ -39,7 +40,7 @@ def create_event(summary: str, description: str, start: datetime.datetime, end: 
         if recur.lower() == 'daily':
             new_event['recurrence'] = ['RRULE:FREQ=DAILY;COUNT=2']
 
-    calendar.event.create_event(new_event)
+    calendar.event.create_event(new_event, cal_id)
 
 
 @app.command()
