@@ -328,8 +328,8 @@ class Event:
         try:
             event = self.get_event_by_id(updated_event['id'])
             logger.info(f"Before Update the Event is: {event}")
-            new_processed_event = self.service.events().update(calendarId='primary', eventId=updated_event['id'],
-                                                               body=updated_event).execute()
+            new_processed_event = self.service.events().patch(calendarId='primary', eventId=updated_event['id'],
+                                                              body=updated_event).execute()
             logger.info(f"After Update the Event is: {new_processed_event}")
             display_event_details([new_processed_event])
         except HttpError as error:
