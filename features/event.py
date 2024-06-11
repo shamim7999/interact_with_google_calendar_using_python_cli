@@ -433,6 +433,41 @@ class Event:
         except Exception as error:
             logger.error(f"An unexpected error occurred: {error}")
 
+    def move_event(self, e_id, source_id, destination_id):
+        """
+        Moves an event from one calendar to another.
+
+        This method uses the move feature of the Google Calendar API to transfer an
+        event from the source calendar to the destination calendar.
+
+        Args:
+            e_id (str): The ID of the event to be moved.
+            source_id (str): The ID of the calendar where the event currently resides.
+            destination_id (str): The ID of the calendar where the event should be moved.
+
+        Returns:
+            None
+
+        Raises:
+            HttpError: If the request to the Google Calendar API fails.
+            OSError: If there is an OS-level error.
+            Exception: For any other unexpected errors.
+
+        Logs:
+            The details of the moved event, including the source and destination calendar IDs, using the logger.
+        """
+        try:
+            updated_event = self.service.events().move(
+                calendarId=source_id, eventId=e_id,
+                destination=destination_id).execute()
+            logger.info(f"Updated Event: {updated_event} goes from {source_id} --> {destination_id}")
+        except HttpError as error:
+            logger.error(f"HTTP Error found {error}")
+        except OSError as error:
+            logger.error(f"OS Error found {error}")
+        except Exception as error:
+            logger.error(f"An unexpected error occurred: {error}")
+
     def get_event_instances(self, e_id):
         """
         Retrieve all instances of a specific recurring event from the primary calendar.

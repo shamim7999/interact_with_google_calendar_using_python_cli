@@ -144,6 +144,10 @@ def update_event_instances(
 
 
 @app.command()
+def move_event(event_id: str,  dest_id: str, src_id: Optional[str] = "primary"):
+    calendar.event.move_event(event_id, src_id, dest_id)
+
+@app.command()
 def watch_event(event_id: str):
     calendar.event.watch_event(event_id)
 
