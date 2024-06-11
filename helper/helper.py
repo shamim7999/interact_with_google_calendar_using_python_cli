@@ -39,6 +39,17 @@ def display_event_details(events):
     console.print(table)
 
 
+def display_calendar_details(calendar_details):
+    table = Table("ID", "Summary")
+
+    for calendar_detail in calendar_details:
+        calendar_id, calendar_summary = calendar_detail['id'], calendar_detail.get('summary', 'No Summary')
+        table.add_row(
+            calendar_id,
+            calendar_summary
+        )
+    console.print(table)
+
 def get_summary_field(old_event, summary):
     if summary is None:
         summary = old_event.get('summary', "Summary Not Available.")
