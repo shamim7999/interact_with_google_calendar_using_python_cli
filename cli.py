@@ -148,6 +148,11 @@ def watch_event(event_id: str):
 
 
 @app.command()
+def list_calendars():
+    calendar.calendar_list.list_calendars()
+
+
+@app.command()
 def list_acls():
     calendar.acl.list_acls()
 

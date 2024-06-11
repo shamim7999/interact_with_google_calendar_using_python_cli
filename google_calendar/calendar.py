@@ -7,6 +7,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
+from features.calendar_list import CalendarList
 from features.event import Event
 from features.acl import ACL
 
@@ -22,6 +24,7 @@ class GoogleCalendar:
         self.authenticate()
         self.event = Event(self.service)
         self.acl = ACL(self.service)
+        self.calendar_list = CalendarList(self.service)
 
     def authenticate(self):
         """Handles user authentication and saves credentials."""
